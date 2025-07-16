@@ -1,25 +1,36 @@
 "use client";
 
 import React, { useRef } from 'react';
+import Image from 'next/image';
 
 interface ImageUploaderProps {
-  onImageUpload: (file: File) => void;
-  index: number;
+  onImageUpload: (imageUrl: string) => void;
+  onUploadStart?: () => void;
+  index?: number;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, index }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, onUploadStart, index }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      onImageUpload(files[0]);
+    const file = e.target.files?.[0];
+    if (file) {
+      // Call onUploadStart to show loading state
+      if (onUploadStart) {
+        onUploadStart();
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          onImageUpload(event.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -33,10 +44,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, index }) =
         className="hidden"
       />
       <button
-        onClick={handleClick}
-        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow"
+        onClick={handleUploadClick}
+        className="px-6 py-3 rounded-md font-retro-bold text-xl flex items-center justify-center gap-2 btn-retro relative overflow-hidden group"
       >
-        Upload Photo {index + 1}
+        <span className="relative z-10 flex items-center gap-2">
+          <div className="w-5 h-5 relative">
+            <Image src="/sparkle.svg" alt="" width={20} height={20} className="animate-twinkle" priority />
+          </div>
+          Upload {index !== undefined ? `Photo ${index + 1}` : 'Memory'}
+        </span>
+        <span className="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-700 opacity-0 group-hover:opacity-100 transition-opacity"></span>
       </button>
     </div>
   );

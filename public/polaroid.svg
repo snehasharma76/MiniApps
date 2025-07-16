@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400px" height="400px" viewBox="0 0 400 400" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>Vintage Polaroid Camera</title>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <!-- Camera Body -->
+        <rect fill="#E8E0D0" x="50" y="100" width="300" height="200" rx="10"></rect>
+        <rect fill="#D0C8B8" x="60" y="110" width="280" height="180" rx="8"></rect>
+        
+        <!-- Lens -->
+        <circle fill="#333333" cx="200" cy="180" r="50"></circle>
+        <circle fill="#222222" cx="200" cy="180" r="40"></circle>
+        <circle fill="#111111" cx="200" cy="180" r="30"></circle>
+        <circle fill="#000000" cx="200" cy="180" r="20"></circle>
+        
+        <!-- Flash -->
+        <rect fill="#DDDDDD" x="280" y="120" width="40" height="40" rx="5"></rect>
+        <rect fill="#FFFFFF" x="285" y="125" width="30" height="30" rx="3"></rect>
+        
+        <!-- Viewfinder -->
+        <rect fill="#333333" x="100" y="120" width="30" height="30" rx="2"></rect>
+        
+        <!-- Button -->
+        <circle fill="#CC3333" cx="320" cy="240" r="15"></circle>
+        
+        <!-- Film Exit Slot -->
+        <rect fill="#222222" x="100" y="260" width="200" height="10" rx="2"></rect>
+        
+        <!-- Rainbow Stripe -->
+        <rect fill="#FF0000" x="50" y="90" width="300" height="5"></rect>
+        <rect fill="#FF7700" x="50" y="85" width="300" height="5"></rect>
+        <rect fill="#FFDD00" x="50" y="80" width="300" height="5"></rect>
+        <rect fill="#00CC00" x="50" y="75" width="300" height="5"></rect>
+        <rect fill="#0066FF" x="50" y="70" width="300" height="5"></rect>
+        <rect fill="#9900FF" x="50" y="65" width="300" height="5"></rect>
+        
+        <!-- Logo -->
+        <text font-family="Arial" font-size="20" font-weight="bold" fill="#333333" x="140" y="230">
+            POLAROID
+        </text>
+    </g>
+</svg>

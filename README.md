@@ -1,4 +1,17 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Polaroid Carousel
+
+A retro-themed web application that lets users create, customize, and share vintage Polaroid-style images. Built with Next.js and React.
+
+![Polaroid Carousel](./public/vintage-polaroid.jpg)
+
+## Features
+
+- Upload and display images in vintage Polaroid frames
+- Add custom captions to your Polaroids
+- Choose from multiple vintage themes (Sepia, Monochrome, Vintage, Classic)
+- Download your creations as images
+- Share to Farcaster (coming soon)
+- Authentic retro styling with animations and effects
 
 ## Getting Started
 
@@ -8,17 +21,16 @@ First, run the development server:
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [Next.js](https://nextjs.org) - React framework
+- [Tailwind CSS](https://tailwindcss.com) - Styling
+- [html2canvas](https://html2canvas.hertzen.com) - For image export functionality
+- Custom animations and styling for vintage effects
 
 ## Learn More
 

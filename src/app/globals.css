@@ -3,13 +3,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --vintage-cream: #f5f0e1;
+  --vintage-brown: #8b5a2b;
+  --vintage-amber: #d97706;
+  --vintage-amber-light: #fbbf24;
 }
 
-@theme inline {
+/* CSS Variables */
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-handwriting: var(--font-caveat);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,7 +26,206 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--vintage-cream);
+  color: var(--vintage-brown);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+.font-caveat {
+  font-family: var(--font-sans), cursive;
+}
+
+.font-retro-bold {
+  font-family: var(--font-caveat), cursive;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 3px 3px 0px rgba(139, 69, 19, 0.3);
+  -webkit-text-stroke: 1px rgba(0,0,0,0.1);
+  color: #d97706;
+  transform: rotate(-1deg);
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.retro-text-bg {
+  background: repeating-linear-gradient(
+    45deg,
+    #f5f0e1,
+    #f5f0e1 10px,
+    #f0e6d2 10px,
+    #f0e6d2 20px
+  );
+  border: 2px solid #8b5a2b;
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+  padding: 0.5rem;
+  display: inline-block;
+}
+
+/* Polaroid styles */
+.polaroid-container {
+  position: relative;
+  display: inline-block;
+  margin: 0 auto;
+  perspective: 1000px;
+}
+
+.polaroid-frame {
+  position: relative;
+  width: 320px;
+  padding: 10px 10px 40px 10px;
+  background: white;
+  border: 8px solid #333;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+  transition: all 0.3s ease;
+}
+
+.polaroid-frame:hover {
+  transform: scale(1.02) rotate(0deg);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+.polaroid-image {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+/* Animation for twinkling effect */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* Animation for polaroid floating effect */
+@keyframes floatPolaroid {
+  0% { transform: rotate(-3deg); }
+  25% { transform: rotate(-2deg) translateY(-2px); }
+  50% { transform: rotate(-1deg) translateY(-4px); }
+  75% { transform: rotate(-2deg) translateY(-2px); }
+  100% { transform: rotate(-3deg); }
+}
+
+.animate-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+.delay-700 {
+  animation-delay: 700ms;
+}
+
+.animate-float {
+  animation: floatPolaroid 6s ease-in-out infinite;
+}
+
+/* Vintage theme */
+.bg-vintage-cream {
+  background-color: var(--vintage-cream);
+}
+
+.text-vintage-brown {
+  color: var(--vintage-brown);
+}
+
+.bg-vintage-amber {
+  background-color: var(--vintage-amber);
+}
+
+/* Theme Selector Styles */
+.vintage-theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  width: 80px;
+  transition: all 0.3s ease;
+}
+
+.vintage-theme-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.vintage-theme-option.selected-theme {
+  border-color: #8b5a2b;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 8px rgba(139, 90, 43, 0.3);
+  transform: scale(1.05);
+}
+
+.theme-color-sample {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-bottom: 6px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  color: white;
+}
+
+.theme-name {
+  font-size: 14px;
+  color: var(--vintage-brown);
+  margin-top: 4px;
+}
+
+.btn-retro {
+  background-color: var(--vintage-amber);
+  border: 3px solid #8b4513;
+  box-shadow: 0 4px 0 #5c2c0d, 0 5px 5px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.btn-retro:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.3), rgba(255,255,255,0));
+  border-radius: 4px 4px 0 0;
+}
+
+.btn-retro:hover {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #5c2c0d, 0 4px 6px rgba(0,0,0,0.3);
+  color: white;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+}
+
+.btn-retro:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #5c2c0d, 0 2px 4px rgba(0,0,0,0.3);
+  color: white;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.9);
+}
+
+.btn-retro:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: 0 2px 0 #5c2c0d, 0 4px 6px rgba(0,0,0,0.2);
+  transform: none;
 }

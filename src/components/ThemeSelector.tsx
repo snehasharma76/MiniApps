@@ -3,32 +3,36 @@
 import React from 'react';
 
 interface ThemeSelectorProps {
-  selectedTheme: string;
+  currentTheme: string;
   onThemeChange: (theme: string) => void;
 }
 
-const ThemeSelector: React.FC<ThemeSelectorProps> = ({ selectedTheme, onThemeChange }) => {
+const ThemeSelector: React.FC<ThemeSelectorProps> = ({ currentTheme, onThemeChange }) => {
   const themes = [
-    { id: 'base', name: 'Base', color: 'bg-blue-500' },
-    { id: 'monad', name: 'Monad', color: 'bg-purple-500' },
-    { id: 'arbitrum', name: 'Arbitrum', color: 'bg-blue-400' },
-    { id: 'coinbase', name: 'Coinbase', color: 'bg-blue-600' },
+    { id: 'sepia', name: 'Sepia', color: 'bg-amber-700', icon: '📷' },
+    { id: 'monochrome', name: 'Monochrome', color: 'bg-gray-900', icon: '🎞️' },
+    { id: 'vintage', name: 'Vintage', color: 'bg-amber-500', icon: '🕰️' },
+    { id: 'classic', name: 'Classic', color: 'bg-blue-600', icon: '📸' },
   ];
 
   return (
     <div className="theme-selector mb-6">
-      <h3 className="text-lg font-medium mb-2">Select Theme</h3>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         {themes.map((theme) => (
           <button
             key={theme.id}
             onClick={() => onThemeChange(theme.id)}
-            className={`${theme.color} w-12 h-12 rounded-full transition-transform ${
-              selectedTheme === theme.id ? 'ring-2 ring-offset-2 ring-black scale-110' : ''
+            className={`vintage-theme-option transition-all ${
+              currentTheme === theme.id ? 'selected-theme' : ''
             }`}
             title={theme.name}
             aria-label={`Select ${theme.name} theme`}
-          />
+          >
+            <div className={`theme-color-sample ${theme.color} flex items-center justify-center`}>
+              <span className="theme-icon text-xl">{theme.icon}</span>
+            </div>
+            <span className="theme-name font-caveat">{theme.name}</span>
+          </button>
         ))}
       </div>
     </div>
