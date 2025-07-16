@@ -19,6 +19,8 @@
 - ✅ Navigation between multiple Polaroid images
 - ✅ Download functionality for created Polaroids
 - ✅ Theme switching with visual feedback
+- ✅ Farcaster integration with Frame protocol support
+- ✅ Mini app functionality for sharing and downloading
 
 ## In Progress
 - 🔄 Optimizing image loading performance
@@ -34,7 +36,7 @@
 - ⬜ Add vintage stickers/decorations for Polaroids
 
 ### Functionality Enhancements
-- ⬜ Implement actual Farcaster integration (currently mocked)
+- ✅ Implement actual Farcaster integration with Frame protocol
 - ⬜ Add local storage to save user's Polaroid collection
 - ⬜ Create gallery view for multiple Polaroids
 - ⬜ Add ability to customize Polaroid frame colors

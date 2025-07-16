@@ -56,7 +56,7 @@ export default function Carousel() {
   };
 
   return (
-    <div className="carousel-container">
+    <div className="carousel-container p-4 md:p-6 max-w-4xl mx-auto">
       <div className="theme-selector-container mb-6 bg-white/70 p-5 rounded-lg shadow-md border-2 border-amber-200" style={{ backgroundImage: 'url("/sparkle.svg")', backgroundRepeat: 'no-repeat', backgroundPosition: 'top right', backgroundSize: '40px' }}>
         <div className="mb-3">
           <h3 className="font-retro-bold text-xl inline-block transform -rotate-1">Choose your vibe:</h3>
@@ -64,7 +64,11 @@ export default function Carousel() {
         <ThemeSelector onThemeChange={handleThemeChange} currentTheme={theme} />
       </div>
       
-      <div className="carousel-content relative" ref={carouselRef}>
+      <div 
+        ref={carouselRef} 
+        className="carousel bg-white/80 rounded-lg p-6 shadow-lg border-2 border-amber-100"
+        data-theme={theme}
+      >
         {photos.length > 0 ? (
           <>
             <div className="polaroid-stack relative">
