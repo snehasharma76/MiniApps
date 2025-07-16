@@ -2,8 +2,6 @@
 
 import React, { useState } from 'react';
 import html2canvas from 'html2canvas';
-import Image from 'next/image';
-import { prepareImageForFarcaster, isInFarcasterFrame } from '../utils/farcaster';
 import { createFallbackPolaroidImage } from '../utils/imageUtils';
 import FarcasterFrame from './FarcasterFrame';
 
@@ -11,104 +9,243 @@ interface ShareOptionsProps {
   carouselRef: React.RefObject<HTMLDivElement | null>;
 }
 
-const ShareOptions: React.FC<ShareOptionsProps> = ({ carouselRef }) => {
+const ShareOptions = ({ carouselRef }: ShareOptionsProps) => {
   const [polaroidImage, setPolaroidImage] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState(false);
-  const handleDownloadImage = async () => {
+
+  // Handle downloading the polaroid image with a simple approach
+  const handleDownloadImage = () => {
     if (!carouselRef.current) return;
+    setIsSharing(true);
     
     try {
-      const canvas = await html2canvas(carouselRef.current, {
-        scale: 2, // Higher quality
-        backgroundColor: null,
-        logging: false,
-      });
+      // Find the actual image in the carousel
+      const actualImageElement = carouselRef.current.querySelector('img');
       
-      const image = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = image;
-      link.download = 'polaroid-carousel.png';
-      link.click();
+      if (!actualImageElement) {
+        throw new Error('Could not find image in carousel');
+      }
+      
+      // Create canvas for the Polaroid
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 500;
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) {
+        throw new Error('Could not get canvas context');
+      }
+      
+      // Get caption text if available
+      let caption = 'Polaroid Memory';
+      const captionElement = carouselRef.current.querySelector('.polaroid-caption');
+      if (captionElement && captionElement.textContent) {
+        caption = captionElement.textContent;
+      }
+      
+      // Draw the Polaroid frame
+      // White background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 400, 500);
+      
+      // Border
+      ctx.strokeStyle = '#dddddd';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(10, 10, 380, 480);
+      
+      // Create a temporary image to draw the actual image
+      const tempImg = new Image();
+      tempImg.crossOrigin = 'anonymous'; // Try to handle CORS
+      
+      // Set up the onload handler before setting the src
+      tempImg.onload = () => {
+        try {
+          // Draw the actual image in the Polaroid frame
+          // Calculate dimensions to maintain aspect ratio
+          const imgWidth = tempImg.width;
+          const imgHeight = tempImg.height;
+          let drawWidth = 340;
+          let drawHeight = 340;
+          
+          if (imgWidth > imgHeight) {
+            // Landscape image
+            drawHeight = (imgHeight / imgWidth) * drawWidth;
+          } else {
+            // Portrait or square image
+            drawWidth = (imgWidth / imgHeight) * drawHeight;
+          }
+          
+          // Center the image in the frame
+          const offsetX = 30 + (340 - drawWidth) / 2;
+          const offsetY = 30 + (340 - drawHeight) / 2;
+          
+          // Draw image with proper dimensions
+          ctx.drawImage(tempImg, offsetX, offsetY, drawWidth, drawHeight);
+          
+          // Add a subtle vignette effect
+          const radialGradient = ctx.createRadialGradient(200, 200, 100, 200, 200, 200);
+          radialGradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+          radialGradient.addColorStop(1, 'rgba(0, 0, 0, 0.2)');
+          ctx.fillStyle = radialGradient;
+          ctx.fillRect(30, 30, 340, 340);
+          
+          // Caption text
+          ctx.fillStyle = '#333333';
+          ctx.font = '24px Arial';
+          ctx.textAlign = 'center';
+          ctx.fillText(caption, 200, 420);
+          
+          // App name
+          ctx.fillStyle = '#777777';
+          ctx.font = '16px Arial';
+          ctx.fillText('Polaroid Carousel', 200, 450);
+          
+          // Add a small shadow at the bottom to give it depth
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+          ctx.fillRect(10, 480, 380, 10);
+          
+          // Convert to PNG and download
+          const pngUrl = canvas.toDataURL('image/png');
+          const downloadLink = document.createElement('a');
+          downloadLink.href = pngUrl;
+          downloadLink.download = 'polaroid-memory.png';
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+          
+          // Store the image for potential sharing
+          setPolaroidImage(pngUrl);
+          setIsSharing(false);
+        } catch (drawError) {
+          console.error('Error drawing image:', drawError);
+          createFallbackPolaroid(ctx, caption);
+        }
+      };
+      
+      // Handle errors loading the image
+      tempImg.onerror = () => {
+        console.error('Error loading image');
+        createFallbackPolaroid(ctx, caption);
+      };
+      
+      // Set the source to the actual image
+      tempImg.src = actualImageElement.src;
+      
+      // If the image is already loaded or cached, the onload might not fire
+      // Add a timeout as a fallback
+      setTimeout(() => {
+        if (!tempImg.complete) {
+          console.log('Image loading timeout, using fallback');
+          createFallbackPolaroid(ctx, caption);
+        }
+      }, 3000);
     } catch (error) {
       console.error('Error generating image:', error);
       alert('Failed to generate image. Please try again.');
+      setIsSharing(false);
+    }
+  };
+  
+  // Helper function to create a fallback polaroid if image loading fails
+  const createFallbackPolaroid = (ctx: CanvasRenderingContext2D, caption: string) => {
+    try {
+      // Image area background
+      ctx.fillStyle = '#f5f5f5';
+      ctx.fillRect(30, 30, 340, 340);
+      
+      // Create a simple gradient background
+      const gradient = ctx.createLinearGradient(30, 30, 370, 370);
+      gradient.addColorStop(0, '#f8e9d1');   // Vintage warm tone
+      gradient.addColorStop(1, '#e6c9a8');   // Vintage sepia tone
+      ctx.fillStyle = gradient;
+      ctx.fillRect(30, 30, 340, 340);
+      
+      // Add some decorative elements to make it look like a photo
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.beginPath();
+      ctx.arc(200, 150, 60, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.fillRect(30, 200, 340, 170);
+      
+      // Caption text
+      ctx.fillStyle = '#333333';
+      ctx.font = '24px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(caption, 200, 420);
+      
+      // App name
+      ctx.fillStyle = '#777777';
+      ctx.font = '16px Arial';
+      ctx.fillText('Polaroid Carousel', 200, 450);
+      
+      // Convert to PNG and download
+      const pngUrl = ctx.canvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+      downloadLink.href = pngUrl;
+      downloadLink.download = 'polaroid-memory.png';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      
+      // Store the image for potential sharing
+      setPolaroidImage(pngUrl);
+      setIsSharing(false);
+    } catch (fallbackError) {
+      console.error('Fallback polaroid creation failed:', fallbackError);
+      alert('Failed to generate image. Please try again.');
+      setIsSharing(false);
     }
   };
 
+  // Handle sharing to Farcaster
   const handleShareToFarcaster = async () => {
     setIsSharing(true);
     if (!carouselRef.current) return;
     
     try {
-      // Create a simplified clone of the carousel for html2canvas to avoid CSS color function issues
-      const clonedElement = carouselRef.current.cloneNode(true) as HTMLElement;
-      clonedElement.style.position = 'absolute';
-      clonedElement.style.left = '-9999px';
-      clonedElement.style.top = '-9999px';
-      document.body.appendChild(clonedElement);
+      // Instead of trying to capture the image with html2canvas,
+      // we'll just create a direct share URL to the app
+      const appUrl = window.location.origin;
       
-      // Remove any problematic CSS that might cause issues with html2canvas
-      const problematicElements = clonedElement.querySelectorAll('[style*="lab"], [style*="lch"]');
-      problematicElements.forEach(el => {
-        (el as HTMLElement).style.background = '#ffffff';
-      });
+      // Get caption text if available
+      let caption = 'Polaroid Memory';
+      const captionElement = carouselRef.current.querySelector('.polaroid-caption');
+      if (captionElement && captionElement.textContent) {
+        caption = captionElement.textContent;
+      }
       
-      // Use simplified options for html2canvas
-      const canvas = await html2canvas(clonedElement, {
-        scale: 2,
-        backgroundColor: '#ffffff',
-        logging: false,
-        ignoreElements: (element) => {
-          // Ignore elements with complex CSS that might cause issues
-          const computedStyle = window.getComputedStyle(element);
-          return computedStyle.background?.includes('lab') || 
-                 computedStyle.background?.includes('lch') ||
-                 computedStyle.color?.includes('lab') ||
-                 computedStyle.color?.includes('lch');
-        }
-      });
+      // Create a shareable message
+      const shareText = `Check out my vintage ${caption} on Polaroid Carousel!`;
       
-      // Clean up the cloned element
-      document.body.removeChild(clonedElement);
-      
-      const image = canvas.toDataURL('image/png');
-      setPolaroidImage(image);
-      
-      // Check if we're in a Farcaster frame context
-      if (isInFarcasterFrame()) {
-        // If we're in a Farcaster frame, we'll use the Frame protocol
-        const processedImage = prepareImageForFarcaster(image);
-        
-        // Create frame action URL with the image
-        const frameActionUrl = new URL(window.location.href);
-        frameActionUrl.searchParams.set('img', processedImage);
-        
-        // In a real implementation, you would post this to the Farcaster API
-        // For now, we'll just show a success message
-        alert('Your Polaroid is ready to share on Farcaster!');
+      // Try to use the Web Share API if available (works on mobile)
+      if (navigator.share) {
+        await navigator.share({
+          title: 'My Polaroid Memory',
+          text: shareText,
+          url: appUrl
+        });
+      } else if (window.open) {
+        // Open Warpcast with the URL to share (works on desktop)
+        const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(appUrl)}`;
+        window.open(warpcastUrl, '_blank');
       } else {
-        // If we're not in a Farcaster frame, we'll redirect to the share page
-        const shareUrl = `${window.location.origin}/share?img=${encodeURIComponent(image)}`;
-        
-        // Option 1: Copy to clipboard
+        // Fallback to clipboard
         const tempInput = document.createElement('input');
         document.body.appendChild(tempInput);
-        tempInput.value = shareUrl;
+        tempInput.value = `${shareText} ${appUrl}`;
         tempInput.select();
         document.execCommand('copy');
         document.body.removeChild(tempInput);
-        
-        // Option 2: Direct navigation to the share page
-        window.location.href = shareUrl;
-        
-        // No need for alert as we're redirecting
+        alert('Share text copied to clipboard! You can paste this in Farcaster to share your Polaroid.');
       }
     } catch (error) {
       console.error('Error sharing to Farcaster:', error);
       
-      // Use fallback image generation if html2canvas fails
+      // Try fallback approach
       try {
-        console.log('Attempting to use fallback image generation...');
+        console.log('Attempting to use fallback sharing...');
         
         // Try to get caption text from the carousel
         let caption = 'Polaroid Memory';
@@ -117,38 +254,22 @@ const ShareOptions: React.FC<ShareOptionsProps> = ({ carouselRef }) => {
           caption = captionElement.textContent;
         }
         
-        // Get current theme
-        let theme = 'vintage';
-        const themeAttribute = carouselRef.current?.getAttribute('data-theme');
-        if (themeAttribute) {
-          theme = themeAttribute;
-        }
+        // Create a simple share message with the app URL
+        const appUrl = window.location.origin;
+        const shareText = `Check out my vintage ${caption} on Polaroid Carousel!`;
         
-        // Generate fallback image
-        const fallbackImage = await createFallbackPolaroidImage(caption, theme);
-        setPolaroidImage(fallbackImage);
+        // Copy to clipboard as fallback
+        const tempInput = document.createElement('input');
+        document.body.appendChild(tempInput);
+        tempInput.value = `${shareText} ${appUrl}`;
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
         
-        // Continue with sharing using the fallback image
-        if (isInFarcasterFrame()) {
-          const processedImage = prepareImageForFarcaster(fallbackImage);
-          const frameActionUrl = new URL(window.location.href);
-          frameActionUrl.searchParams.set('img', processedImage);
-          alert('Your Polaroid is ready to share on Farcaster!');
-        } else {
-          const shareUrl = `${window.location.origin}/share?img=${encodeURIComponent(fallbackImage)}`;
-          const tempInput = document.createElement('input');
-          document.body.appendChild(tempInput);
-          tempInput.value = shareUrl;
-          tempInput.select();
-          document.execCommand('copy');
-          document.body.removeChild(tempInput);
-          
-          // Direct navigation to the share page
-          window.location.href = shareUrl;
-        }
+        alert('Share text copied to clipboard! You can paste this in Farcaster to share your Polaroid.');
       } catch (fallbackError) {
-        console.error('Fallback image generation failed:', fallbackError);
-        alert('Unable to generate image for sharing. Please try again later.');
+        console.error('Fallback sharing failed:', fallbackError);
+        alert('Unable to share. Please try again later.');
       }
     } finally {
       setIsSharing(false);
@@ -182,7 +303,7 @@ const ShareOptions: React.FC<ShareOptionsProps> = ({ carouselRef }) => {
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <div className="relative w-4 h-4">
-                <Image src="/sparkle.svg" width={16} height={16} alt="" className="animate-twinkle" priority />
+                <img src="/sparkle.svg" width={16} height={16} alt="" className="animate-twinkle" />
               </div>
             )}
             {isSharing ? 'Processing...' : 'Share to Farcaster'}
