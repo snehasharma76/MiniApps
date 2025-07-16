@@ -35,8 +35,16 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Define types for webhook data
+interface FrameActionData {
+  buttonIndex: number;
+  castId: string;
+  frameUrl: string;
+  [key: string]: unknown;
+}
+
 // Handle frame action events (button clicks)
-function handleFrameAction(data: any) {
+function handleFrameAction(data: FrameActionData) {
   const { buttonIndex, castId, frameUrl } = data;
   
   console.log(`Frame action: Button ${buttonIndex} clicked for cast ${castId} on frame ${frameUrl}`);
@@ -47,8 +55,15 @@ function handleFrameAction(data: any) {
   });
 }
 
+// Define type for app open data
+interface AppOpenData {
+  fid: string;
+  username: string;
+  [key: string]: unknown;
+}
+
 // Handle app open events
-function handleAppOpen(data: any) {
+function handleAppOpen(data: AppOpenData) {
   const { fid, username } = data;
   
   console.log(`App opened by user ${username} (FID: ${fid})`);

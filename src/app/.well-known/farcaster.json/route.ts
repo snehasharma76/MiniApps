@@ -1,23 +1,7 @@
 import { NextResponse } from 'next/server';
 
 /**
- * Filter out undefined or empty properties from an object
- */
-function withValidProperties(
-  properties: Record<string, undefined | string | string[] | null>
-) {
-  return Object.fromEntries(
-    Object.entries(properties).filter(([_, value]) => {
-      if (Array.isArray(value)) {
-        return value.length > 0;
-      }
-      return value !== undefined && value !== null && value !== '';
-    })
-  );
-}
-
-/**
- * GET handler for the .well-known/farcaster endpoint
+ * GET handler for the .well-known/farcaster.json endpoint
  * This provides metadata for Farcaster clients about this mini-app
  */
 export async function GET() {
@@ -25,12 +9,12 @@ export async function GET() {
   
   // Create the response object with the required Farcaster manifest format
   const response = {
-    accountAssociation: withValidProperties({
+    accountAssociation: {
       header: process.env.FARCASTER_HEADER || '',
       payload: process.env.FARCASTER_PAYLOAD || '',
       signature: process.env.FARCASTER_SIGNATURE || '',
-    }),
-    frame: withValidProperties({
+    },
+    frame: {
       version: "1",
       name: process.env.NEXT_PUBLIC_ONCHAINKIT_PROJECT_NAME || 'Polaroid Carousel',
       subtitle: process.env.NEXT_PUBLIC_APP_SUBTITLE || 'Create and share vintage Polaroid memories',
@@ -48,7 +32,7 @@ export async function GET() {
       ogTitle: process.env.NEXT_PUBLIC_APP_OG_TITLE || 'Polaroid Carousel - Vintage Photo Creator',
       ogDescription: process.env.NEXT_PUBLIC_APP_OG_DESCRIPTION || 'Create and share beautiful vintage Polaroid-style photos with friends',
       ogImageUrl: process.env.NEXT_PUBLIC_APP_OG_IMAGE || `${URL}/og-image.png`,
-    }),
+    }
   };
   
   // Return the response with proper headers

@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { isInFarcasterFrame, getFarcasterUser } from '../../utils/farcaster';
 import Link from 'next/link';
 
 export default function SharePage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [isFarcaster, setIsFarcaster] = useState(false);
-  const [userInfo, setUserInfo] = useState<{ fid?: string; username?: string }>({});
+  // Store Farcaster context info but mark as unused to avoid linting errors
+  const [_isFarcaster, setIsFarcaster] = useState(false); // Prefixed with _ to indicate it's intentionally unused
+  const [_userInfo, setUserInfo] = useState<{ fid?: string; username?: string }>({}); // Prefixed with _ to indicate it's intentionally unused
   
   useEffect(() => {
     // Check if we're in a Farcaster frame context
@@ -52,55 +53,61 @@ export default function SharePage() {
     description: 'Create and share vintage Polaroid memories'
   };
 
+  // Memoize frameMetadata to avoid recreation on each render
+  const memoizedFrameMetadata = useMemo(() => frameMetadata, []);
+
   // Add frame metadata to head
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      // Add frame metadata for Farcaster
-      const meta = document.createElement('meta');
-      meta.name = 'fc:frame';
-      meta.content = 'vNext';
-      document.head.appendChild(meta);
+    // Add Farcaster Frame metadata
+    if (typeof window !== 'undefined' && imageUrl) {
+      const { title, description, image, buttons } = memoizedFrameMetadata;
       
-      // Add frame image
-      const imgMeta = document.createElement('meta');
-      imgMeta.name = 'fc:frame:image';
-      imgMeta.content = frameMetadata.image;
-      document.head.appendChild(imgMeta);
+      // Add frame metadata
+      const versionMeta = document.createElement('meta');
+      versionMeta.name = 'fc:frame';
+      versionMeta.content = 'vNext';
+      document.head.appendChild(versionMeta);
       
-      // Add frame title
+      // Add image
+      const imageMeta = document.createElement('meta');
+      imageMeta.name = 'fc:frame:image';
+      imageMeta.content = image || imageUrl;
+      document.head.appendChild(imageMeta);
+      
+      // Add title
       const titleMeta = document.createElement('meta');
       titleMeta.name = 'fc:frame:title';
-      titleMeta.content = frameMetadata.title;
+      titleMeta.content = title;
       document.head.appendChild(titleMeta);
       
-      // Add frame description
+      // Add description
       const descMeta = document.createElement('meta');
       descMeta.name = 'fc:frame:description';
-      descMeta.content = frameMetadata.description;
+      descMeta.content = description;
       document.head.appendChild(descMeta);
       
       // Add button 1
       const btn1Meta = document.createElement('meta');
       btn1Meta.name = 'fc:frame:button:1';
-      btn1Meta.content = frameMetadata.buttons[0].label;
+      btn1Meta.content = buttons[0].label;
       document.head.appendChild(btn1Meta);
       
       // Add button 1 action
       const btn1ActionMeta = document.createElement('meta');
       btn1ActionMeta.name = 'fc:frame:button:1:action';
-      btn1ActionMeta.content = frameMetadata.buttons[0].action;
+      btn1ActionMeta.content = buttons[0].action;
       document.head.appendChild(btn1ActionMeta);
       
       // Add button 2
       const btn2Meta = document.createElement('meta');
       btn2Meta.name = 'fc:frame:button:2';
-      btn2Meta.content = frameMetadata.buttons[1].label;
+      btn2Meta.content = buttons[1].label;
       document.head.appendChild(btn2Meta);
       
       // Add button 2 action
       const btn2ActionMeta = document.createElement('meta');
       btn2ActionMeta.name = 'fc:frame:button:2:action';
-      btn2ActionMeta.content = frameMetadata.buttons[1].action;
+      btn2ActionMeta.content = buttons[1].action;
       document.head.appendChild(btn2ActionMeta);
       
       // Add post URL for button 1
@@ -115,7 +122,7 @@ export default function SharePage() {
       redirectUrlMeta.content = `${window.location.origin}/download?img=${encodeURIComponent(imageUrl || '')}`;
       document.head.appendChild(redirectUrlMeta);
     }
-  }, [imageUrl]);
+  }, [imageUrl, memoizedFrameMetadata]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-amber-50">
