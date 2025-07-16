@@ -54,6 +54,7 @@ export default function SharePage() {
   };
 
   // Memoize frameMetadata to avoid recreation on each render
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoizedFrameMetadata = useMemo(() => frameMetadata, []);
 
   // Add frame metadata to head

@@ -13,15 +13,17 @@ const BaseConnection: React.FC = () => {
       // Check if MetaMask is installed
       if (typeof window.ethereum !== 'undefined') {
         // Request account access
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' }) as string[];
         
         // Get the current network
         const provider = new ethers.BrowserProvider(window.ethereum);
         const network = await provider.getNetwork();
         
-        setAccount(accounts[0]);
-        setNetworkName(network.name);
-        setIsConnected(true);
+        if (accounts && accounts.length > 0) {
+          setAccount(accounts[0]);
+          setNetworkName(network.name);
+          setIsConnected(true);
+        }
       } else {
         alert('Please install MetaMask to connect to Base network');
       }
@@ -35,8 +37,8 @@ const BaseConnection: React.FC = () => {
     const checkConnection = async () => {
       if (typeof window.ethereum !== 'undefined') {
         try {
-          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-          if (accounts.length > 0) {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' }) as string[];
+          if (accounts && accounts.length > 0) {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const network = await provider.getNetwork();
             
