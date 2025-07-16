@@ -22,6 +22,10 @@ This document tracks common errors encountered during the development of the Pol
 - **Error**: Blurry or incorrectly rendered images
 - **Solution**: Use appropriate scaling factors and ensure all elements are properly loaded before capturing
 
+### html2canvas CSS Color Function Issues
+- **Error**: html2canvas fails with errors like "Unsupported color function: oklab" when trying to capture elements with modern CSS color functions
+- **Solution**: Replaced html2canvas with direct Canvas API drawing to avoid CSS parsing issues. The new approach directly captures the image from the DOM and draws it onto a canvas with a Polaroid-style frame
+
 ## Farcaster Integration
 
 ### Connection Issues

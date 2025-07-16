@@ -17,7 +17,7 @@
 - ✅ Image upload and display in Polaroid frames
 - ✅ Caption editing for Polaroid images
 - ✅ Navigation between multiple Polaroid images
-- ✅ Download functionality for created Polaroids
+- ✅ Download functionality for created Polaroids (fixed html2canvas issues with CSS color functions)
 - ✅ Theme switching with visual feedback
 - ✅ Farcaster integration with Frame protocol support
 - ✅ Mini app functionality for sharing and downloading
