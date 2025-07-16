@@ -87,11 +87,10 @@ const ShareOptions: React.FC<ShareOptionsProps> = ({ carouselRef }) => {
         // For now, we'll just show a success message
         alert('Your Polaroid is ready to share on Farcaster!');
       } else {
-        // If we're not in a Farcaster frame, we'll provide instructions
-        // for sharing manually
+        // If we're not in a Farcaster frame, we'll redirect to the share page
         const shareUrl = `${window.location.origin}/share?img=${encodeURIComponent(image)}`;
         
-        // Create a temporary input to copy the URL
+        // Option 1: Copy to clipboard
         const tempInput = document.createElement('input');
         document.body.appendChild(tempInput);
         tempInput.value = shareUrl;
@@ -99,7 +98,10 @@ const ShareOptions: React.FC<ShareOptionsProps> = ({ carouselRef }) => {
         document.execCommand('copy');
         document.body.removeChild(tempInput);
         
-        alert('Share URL copied to clipboard! You can paste this in Farcaster to share your Polaroid.');
+        // Option 2: Direct navigation to the share page
+        window.location.href = shareUrl;
+        
+        // No need for alert as we're redirecting
       }
     } catch (error) {
       console.error('Error sharing to Farcaster:', error);
@@ -140,7 +142,9 @@ const ShareOptions: React.FC<ShareOptionsProps> = ({ carouselRef }) => {
           tempInput.select();
           document.execCommand('copy');
           document.body.removeChild(tempInput);
-          alert('Share URL copied to clipboard! You can paste this in Farcaster to share your Polaroid.');
+          
+          // Direct navigation to the share page
+          window.location.href = shareUrl;
         }
       } catch (fallbackError) {
         console.error('Fallback image generation failed:', fallbackError);

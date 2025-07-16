@@ -117,6 +117,12 @@ export default function SharePage() {
       postUrlMeta.content = `${window.location.origin}/api/frame`;
       document.head.appendChild(postUrlMeta);
       
+      // Add fc:frame:state with the image URL to pass to the API
+      const stateMeta = document.createElement('meta');
+      stateMeta.name = 'fc:frame:state';
+      stateMeta.content = JSON.stringify({ imageUrl });
+      document.head.appendChild(stateMeta);
+      
       // Add redirect URL for button 2
       const redirectUrlMeta = document.createElement('meta');
       redirectUrlMeta.name = 'fc:frame:button:2:target';
