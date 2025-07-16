@@ -38,7 +38,10 @@ export async function POST(request: NextRequest) {
     }
     
     // Get the image URL from state
-    const imageUrl = (state as any).imageUrl;
+    interface FrameState {
+      imageUrl?: string;
+    }
+    const imageUrl = (state as FrameState).imageUrl;
     
     // Determine which button was pressed
     const buttonIndex = untrustedData?.buttonIndex || 1;

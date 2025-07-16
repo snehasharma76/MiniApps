@@ -7,9 +7,9 @@ import Link from 'next/link';
 
 export default function SharePage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  // Store Farcaster context info but mark as unused to avoid linting errors
-  const [_isFarcaster, setIsFarcaster] = useState(false); // Prefixed with _ to indicate it's intentionally unused
-  const [_userInfo, setUserInfo] = useState<{ fid?: string; username?: string }>({}); // Prefixed with _ to indicate it's intentionally unused
+  // Store Farcaster context info
+  const [, setIsFarcaster] = useState(false); // We only need the setter
+  const [, setUserInfo] = useState<{ fid?: string; username?: string }>({}); // We only need the setter
   
   useEffect(() => {
     // Check if we're in a Farcaster frame context
